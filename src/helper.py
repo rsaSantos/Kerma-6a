@@ -18,7 +18,7 @@ def print_tx(tx: Transaction, name: str) -> None:
     print('----------------------------------')
 
 def post_tx(tx: Transaction):
-    # response = requests.post(API_SEND_ENDPOINT, tx.serialize())  # blockstream
-    response = requests.post(API_SEND_ENDPOINT2, f'{{"tx":"{tx.serialize()}"}}')  # blockcypher
+    response = requests.post(API_SEND_ENDPOINT, tx.serialize())  # blockstream
+    #response = requests.post(API_SEND_ENDPOINT2, f'{{"tx":"{tx.serialize()}"}}')  # blockcypher
     time.sleep(1.5)
     print(response.text)

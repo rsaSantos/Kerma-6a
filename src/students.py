@@ -22,11 +22,9 @@ def main():
 
 
     ### Exercise 2
-    solution_ex2 = solve_ex2(TX_IN_EX2, CAROL, 2500)
-    print_tx(solution_ex2, 'Transaction solution_ex2')
-    post_tx(solution_ex2)
-
-    exit(0)
+    #solution_ex2 = solve_ex2(TX_IN_EX2, CAROL, 2000)
+    #print_tx(solution_ex2, 'Transaction solution_ex2')    
+    #post_tx(solution_ex2)
 
     ### Exercise 3
     solution_ex3 = solve_ex3(TX_IN_EX3, DAVE, 4000)
@@ -66,7 +64,7 @@ def solve_ex2(tx_in: TxInput, id_carol: Id, amount: int) -> Transaction:  # You 
     sig_carol = id_carol.sk.sign_input(tx, 0, SCRIPT_PK_EX2)
 
     #### Set unlocking script (script_sig) to match the locking script (script_pk) of the given input 
-    tx_in.script_sig = Script(['OP_0']) # TODO replace 'OP_0' with your solution here
+    tx_in.script_sig = Script([sig_carol, id_carol.pk.to_hex(), PUNISH_SECRET, 'OP_TRUE'])
 
     return tx
 
