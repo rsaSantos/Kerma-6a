@@ -59,6 +59,27 @@ In summary, for every HTLC, there's a preimage (a secret value) whose hash was u
 Note: In cryptography, a preimage is the original input that was used to generate a specific hash output.
 
 # Exercise 3
-TODO: Include a copy of your script here
-TODO: Explain why your solution works
 
+This a the solution for exercise 3: sig_dave, id_dave.pk.to_hex(), UNKNOWN_HASH, 'OP_FALSE', sig_dave, id_dave.pk.to_hex()
+
+Before entering the if statement from the locking script we need to provide the public key of Dave and his signature, similarly to what we have done previously with Pay-to-PubKey-Hash lock scripts.
+
+So after using this two values we have in the stack: sig_dave, id_dave.pk.to_hex(), UNKNOWN_HASH, 'OP_FALSE'
+
+Since we are not yet pass the 'FUTURE_TIME' we need to exploit the else statement, therefore using OP_FALSE.
+
+In the else statement we start by calculating the sha256 of our topmost element: UNKNOWN_HASH. Then UNKNOWN_HASH is added to the stack and we calculate OP_EQUAL. This results in being added the value 0, since the hash of a value is different from itself. The stack is then: sig_dave, id_dave.pk.to_hex(), 0
+
+The two topmost values are duplicated with OP_2DUP and the stack becomes: sig_dave, id_dave.pk.to_hex(), 0, id_dave.pk.to_hex(), 0
+
+The OP_HASH160 is applied to 0 and MALLORY_PK_HASH is pushed into the stack, resulting in: sig_dave, id_dave.pk.to_hex(), 0, id_dave.pk.to_hex(), OP_HASH160(0), MALLORY_PK_HASH
+
+The operation OP_2ROT makes the fifth and sixth items go to the top of the stack resulting in: 0, id_dave.pk.to_hex(), OP_HASH160(0), MALLORY_PK_HASH, sig_dave, id_dave.pk.to_hex()
+
+With two OP_DUP operations the topmost value (id_dave.pk.to_hex()) is duplicated twice. After this operation we exit the if statement and apply the OP_EQUALVERIFY operation which is trivially true, removing both the previously added values.
+
+The operation OP_CHECKSIGVERIFY will use both the sig_dave and his public key and the resulting stack will be: 0, id_dave.pk.to_hex(), OP_HASH160(0), MALLORY_PK_HASH
+
+With the operations OP_2DROP and OP_DROP we drop the three topmost values in the stack and the result is: 0
+
+The final operation OP_NOT transforms this 0 into 1 which equates to true, meaning that our transaction is valid.
