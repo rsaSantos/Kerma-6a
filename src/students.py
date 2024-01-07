@@ -29,7 +29,7 @@ def main():
     ### Exercise 3
     solution_ex3 = solve_ex3(TX_IN_EX3, DAVE, 4000)
     print_tx(solution_ex3, 'Transaction solution_ex3')
-    # post_tx(solution_ex3)
+    post_tx(solution_ex3)
 
 def solve_ex1(tx_in: TxInput, id_alice: Id, id_bob: Id, amount_alice: int, amount_bob: int) -> Transaction:  # You can modify the parameters if you need to
     #### Create outputs
@@ -79,7 +79,7 @@ def solve_ex3(tx_in: TxInput, id_dave: Id, amount: int) -> Transaction:  # You c
     sig_dave = id_dave.sk.sign_input(tx, 0, SCRIPT_PK_EX3)
     
     #### Set unlocking script (script_sig) to match the locking script (script_pk) of the given input 
-    tx_in.script_sig = Script(['OP_O']) # TODO replace 'OP_0' with your solution here
+    tx_in.script_sig = Script([sig_dave, id_dave.pk.to_hex(), UNKNOWN_HASH, 'OP_FALSE', sig_dave, id_dave.pk.to_hex()])
 
     return tx
 
