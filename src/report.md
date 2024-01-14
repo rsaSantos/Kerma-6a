@@ -6,6 +6,10 @@ Author: Rúben Samuel Alves Santos
 
 solution: OP_0 sigAlice sigBob
 
+or with the real values
+
+OP_0 304402203471a575b33f09eceda586c854a07c3ad55289fbfdaf9d01d973bd9f99687d8502205c7b77477a91b0d3f641cfd242ea9e40717f5093b00b68147fffcdfc8790eb8701 3044022013c4d2dc67fc1ef724b9720b54c7ba14b932a737407709c5a0a260f98e41d123022015093e4b8080f65aa837487138685a69b3b30c7907ab27c65d9a54c3bcfcc52a01
+
 To understand why this solution works we need to understand the locking script of the given input:
     
     OP_2 <Alice's Public Key> <Bob's Public Key> OP_2 OP_CHECKMULTISIG
@@ -16,16 +20,13 @@ The solution starts with a OP_0 value that serves as a dummy value for the OP_CH
 
 The transaction had two outputs (1000 satoshis to Alice and 2000 satoshis to Bob) and each output was secured using a Pay-to-PubKey-Hash (P2PKH) script. The remainer 1500 satoshis were given to the miner as a fee.
 
-Bonus Question: As described, this final state differs from a regular state, as it has no revocation mechanism, timelock and is not duplicated. Why do we need these things in a regular state and how does the duplication work?
-
-In regular states of the Lightning Network's payment channels, the incorporation of revocation mechanisms ensures that once a new state is agreed upon, the previous state becomes invalid.
-Timelocks provide safety by delaying the finalization of broadcasted states on the blockchain. This delay allows the parties to contest the transaction in case an older, invalidated state is used.
-State duplication, where each party holds a version of the channel's state, allows any participant to unilaterally enforce the state on the blockchain if needed.
-These mechanisms are not necessary in the final state of a cooperative channel, as there's a mutual agreement on the funds' distribution, eliminating the need for additional security against unilateral actions or disputes.
-
 # Exercise 2
 
 solution: sig_carol, id_carol.pk.to_hex(), PUNISH_SECRET, 'OP_TRUE'
+
+or with the real values:
+
+30440220446cd2be21d6312affd51a00f660045fdd05a4e44ddb961bb42a2c9a14a8b9260220153180e388c9b670f4eb61911c92dd3139f95b46e0826d372c38e85c913bb0fc01 0234814cda6823160af45d502e0428e9b5207d306a8bedb7ccaccc729d63e24ee4 b90ec7c29234f4a65f321232f4de7096a5e9551830c5f6b96a89bdf382131117 OP_TRUE
 
 The value of OP_TRUE is meant to trigger the first part of the if statement. This first part will calculate the sha256 of the PUNISH_SECRET and then compare it to the PUNISH_HASH with OP_EQUALVERIFY. Since this is true, then the hexadecimal representation of Carol's public key is duplicated with OP_DUP and then hashed with OP_HASH160. The hash of Carol's public key is also in stack and when the if statement exits, both these values are compared with OP_EQUALVERIFY. This is true, so the script continues to the next step. Finally, the signature of Carol is checked with OP_CHECKSIG.
 
@@ -38,6 +39,10 @@ In summary, for every HTLC, there's a preimage (a secret value) whose hash was u
 # Exercise 3
 
 This a the solution for exercise 3: sig_dave, id_dave.pk.to_hex(), UNKNOWN_HASH, 'OP_FALSE', sig_dave, id_dave.pk.to_hex()
+
+or with the real values:
+
+304402200a016c311d31336adffe6a5fdbf3c9efa63fac13b42215a2e12c8d4e8cf90d7d02203fc2fd51484e3fd7789151d3b5df16afe571f66ce0d25aedcbe5073b29bc2db201 02c6094e44a3c81d38fbcea6f3753625b2237d150732c0d2f19da6b507c93219ca 147d87d9ef309f0b49846573321199362a8283b1119e68189167fcbe3fe5f8c6 OP_FALSE 304402200a016c311d31336adffe6a5fdbf3c9efa63fac13b42215a2e12c8d4e8cf90d7d02203fc2fd51484e3fd7789151d3b5df16afe571f66ce0d25aedcbe5073b29bc2db201 02c6094e44a3c81d38fbcea6f3753625b2237d150732c0d2f19da6b507c93219ca
 
 Before entering the if statement from the locking script we need to provide the public key of Dave and his signature, similarly to what we have done previously with Pay-to-PubKey-Hash lock scripts.
 
